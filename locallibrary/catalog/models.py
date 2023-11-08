@@ -1,5 +1,6 @@
 from django.db import models
-
+from django.conf import settings
+from datetime import date
 # Create your models here.
 
 class Genre(models.Model):
@@ -51,6 +52,21 @@ class BookInstance(models.Model):
     book = models.ForeignKey('Book', on_delete=models.RESTRICT, null=True)
     imprint = models.CharField(max_length=200)
     due_back = models.DateField(null=True, blank=True)
+    
+    #user model is imported from settings.py
+    #this was created from the admin page
+    #we could also import the user model from django.contrib.auth.models
+    #then set borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+ 
+    borrower = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    @property
+    def is_overdue(self):
+        return bool(self.due_back and date.today() > self.due_back)
+    #We first verify whether due_back is empty before making a comparison. An empty due_back field would cause Django to throw an error instead of showing the page: empty values are not comparable
+    #this is a property decorator
+    #it allows us to define a method that we can access like an attribute
+
 
     LOAN_STATUS = (
         ('m', 'Maintenance'),
@@ -99,5 +115,3 @@ class Language(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return self.name
-    
-    
