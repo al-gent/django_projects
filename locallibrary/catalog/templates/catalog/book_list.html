@@ -2,6 +2,8 @@
 
 {% block content %}
   <h1>Book List</h1>
+
+  <!-- zero returns as false, so if book_list will return true only if there are books to display-->
   {% if book_list %}
     <ul>
       {% for book in book_list %}
