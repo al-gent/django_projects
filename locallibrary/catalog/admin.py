@@ -24,6 +24,7 @@ class BookAdmin(admin.ModelAdmin):
 class BookInstanceAdmin(admin.ModelAdmin):
     list_display = ('book', 'status', 'borrower', 'due_back', 'id')
     list_filter = ('status', 'due_back')
+    permission_required = 'catalog.can_mark_returned'
 
     fieldsets = (
         (None, {

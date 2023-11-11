@@ -1,8 +1,16 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
-# Create your views here.
 from .models import Book, Author, BookInstance, Genre
+import datetime
+
+from django.contrib.auth.decorators import login_required, permission_required
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
+from catalog.forms import RenewBookForm
 
 def index(request):
     """View function for home page of site."""
@@ -71,14 +79,22 @@ class LoanedBooksByUserListView(LoginRequiredMixin,generic.ListView):
             .filter(status__exact='o')
             .order_by('due_back')
         )
-import datetime
+        
 
-from django.contrib.auth.decorators import login_required, permission_required
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
-from django.urls import reverse
+class AllLoanedBooksByUserListView(PermissionRequiredMixin, generic.ListView):
+    """Generic class-based view listing books on loan to all users."""
+    permission_required = 'catalog.can_mark_returned'
+    model = BookInstance
+    template_name = 'catalog/book_instance_list_borrowed_all.html'
+    paginate_by = 10
 
-from catalog.forms import RenewBookForm
+    def get_queryset(self):
+        return (
+            BookInstance.objects.all()
+            .filter(status__exact='o')
+            .order_by('due_back')
+        )
+        
 
 @login_required
 @permission_required('catalog.can_mark_returned', raise_exception=True)

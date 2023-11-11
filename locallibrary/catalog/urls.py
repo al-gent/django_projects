@@ -10,5 +10,6 @@ urlpatterns = [
     path('authors/<int:pk>', views.AuthorDetailView.as_view(), name='author-detail'),
     #<int:pk> is a path converter that matches an integer and passes it to the view as a variable called pk
     path('mybooks/', views.LoanedBooksByUserListView.as_view(), name='my-borrowed'),
+    path('allbooks/', views.AllLoanedBooksByUserListView.as_view(), name='all-borrowed'),
     path('book/<uuid:pk>/renew/', views.renew_book_librarian, name='renew-book-librarian'),
 ]
